@@ -6,6 +6,7 @@ from google.genai import types
 import argparse
 
 def generate_content(client, messages):
+    print("generate content accessed")
     response = client.models.generate_content(
         model='gemini-2.0-flash-001', 
         contents= messages,
