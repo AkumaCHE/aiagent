@@ -1,13 +1,18 @@
 #from dir name.filename import function name
-from functions.write_file import write_file
+from functions.run_python import run_python_file
 
 if __name__ == "__main__":
-    result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-    print(f"Result for write file lorem.txt file:\n{result}")
+    result = run_python_file("calculator", "main.py")
+    print(f"Result for run file main.py file:\n{result}")
 
-    result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
-    print(f"Result for write file 'pkg/morelorem.txt' file:\n{result}")
+    result = run_python_file("calculator", "main.py", ["3 + 5"])
+    print(f"Result for run file 'main.py' and args file:\n{result}")
 
-    result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-    print(f"Result for write file '/tmp/temp.txt' file:\n{result}")
+    result = run_python_file("calculator", "tests.py")
+    print(f"Result for run file 'tests.py' file:\n{result}")
 
+    result = run_python_file("calculator", "../main.py")
+    print(f"Result for run file '../main.py' file:\n{result}")
+
+    result = run_python_file("calculator", "nonexistent.py")
+    print(f"Result for run file 'nonexistent.py' file:\n{result}")
