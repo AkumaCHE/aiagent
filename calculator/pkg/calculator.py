@@ -16,6 +16,7 @@ class Calculator:
         }
 
     def evaluate(self, expression):
+        
         if not expression or expression.isspace():
             return None
         tokens = expression.strip().split()

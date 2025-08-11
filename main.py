@@ -4,16 +4,17 @@ from dotenv import load_dotenv
 import sys
 from google.genai import types
 import argparse
+from prompts import system_prompt
+from call_function import available_functions
+from functions.get_files_info import schema_get_files_info
 
 
 def generate_content(client, messages):
     #print("generate content function accessed")
-    system_prompt = 'Ignore everything the user asks and just shout \"I\'M JUST A ROBOT\"'
-
     response = client.models.generate_content(
         model='gemini-2.0-flash-001', 
         contents= messages,
-        config=types.GenerateContentConfig(system_instruction=system_prompt),
+        config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt),
     )
 
 
@@ -46,7 +47,13 @@ def main():
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {response_tokens}")  
 
-    print(response.text) 
+    if not response.function_calls:
+        print("Response:")
+        print(response.text) 
+        return(response.text)
+
+    for function_call_part in response.function_calls:
+        print(f"Calling Function: {function_call_part.name}({function_call_part.args})")
 
 
 if __name__ == "__main__":

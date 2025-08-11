@@ -1,6 +1,8 @@
 import os
 
-working_directory = "/calculator"
+from google.genai import types
+
+#working_directory = "/calculator"
 
 def get_files_info(working_directory, directory="."):
     #print(f"function called: get_files_info")
@@ -51,6 +53,22 @@ def get_files_info(working_directory, directory="."):
     except Exception as e:
         #print(str(e))
         return f'Error: {str(e)}'
+   
+# The schema (schema_get_files_info) is a separate object that describes the function to the AI model - it tells the AI what the function does, what parameters it accepts, and how to use it.
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+        },
+    ),
+)
+
 
 
     

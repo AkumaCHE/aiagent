@@ -1,5 +1,5 @@
 import os
-
+from google.genai import types
 
 def write_file(working_directory, file_path, content):
     #print(f'write_file func called')
@@ -31,5 +31,23 @@ def write_file(working_directory, file_path, content):
     #print(f'Successfully wrote to "{file_path}" ({len(content)} characters written)')
     return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
 
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="writes content to a file, constrained to files in the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The location of the file, relative to the working directory.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The content that is to be written to the file",
+            ),
+        },
+        required=["file_path", "content"],
+    ),
 
-#write_file("calculator", "pkg/morelorem.txt", "wait, this isn't lorem ipsum")
+)
+
