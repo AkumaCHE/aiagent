@@ -7,6 +7,7 @@ import argparse
 from prompts import system_prompt
 from call_function import available_functions
 from functions.get_files_info import schema_get_files_info
+from call_function import call_function
 
 
 def generate_content(client, messages):
@@ -53,7 +54,17 @@ def main():
         return(response.text)
 
     for function_call_part in response.function_calls:
-        print(f"Calling Function: {function_call_part.name}({function_call_part.args})")
+        function_call_result = call_function(function_call_part, args.verbose)
+        if not function_call_result.parts[0].function_response.response:
+            raise Exception("Fatal Error")
+        
+
+        if args.verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+
+
+        
+
 
 
 if __name__ == "__main__":
