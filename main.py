@@ -40,30 +40,48 @@ def main():
     messages = [
     types.Content(role="user", parts=[types.Part(text=args.prompt)]),
 ]
-    
-    response, prompt_tokens, response_tokens = generate_content(client, messages)
-
-    if args.verbose:
-        print(f"User prompt: {args.prompt}")
-        print(f"Prompt tokens: {prompt_tokens}")
-        print(f"Response tokens: {response_tokens}")  
-
-    if not response.function_calls:
-        print("Response:")
-        print(response.text) 
-        return(response.text)
-
-    for function_call_part in response.function_calls:
-        function_call_result = call_function(function_call_part, args.verbose)
-        if not function_call_result.parts[0].function_response.response:
-            raise Exception("Fatal Error")
+    iteration_count = 0
+    while iteration_count <20:
+        iteration_count += 1
+        try:
+            response, prompt_tokens, response_tokens = generate_content(client, messages)
+        except Exception as e:
+            print(f"Error: {e}")
+            break
         
+        if response.candidates:
+            for candidate in response.candidates:
+                messages.append(candidate.content)
 
         if args.verbose:
-            print(f"-> {function_call_result.parts[0].function_response.response}")
+            print(f"User prompt: {args.prompt}")
+            print(f"Prompt tokens: {prompt_tokens}")
+            print(f"Response tokens: {response_tokens}")  
+
+        if not response.function_calls:
+            print("Final Response:")
+            print(response.text) 
+            break
 
 
-        
+        function_responses = []  # Create a list to collect the results
+
+        for function_call_part in response.function_calls:
+            function_call_result = call_function(function_call_part, args.verbose)
+
+            if not function_call_result.parts[0].function_response.response:
+                raise Exception("Fatal Error")
+            
+
+            if args.verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
+
+
+            # Add this result to our collection
+            function_responses.append(function_call_result.parts[0])
+
+        # After the loop, add all function results to messages
+        messages.append(types.Content(role="user", parts=function_responses))
 
 
 
